@@ -26,7 +26,7 @@ class AssetHttp
 	{
 		listener = new HttpListener();
 
-		listener.Prefixes.Add($"http://localhost:5000/");
+		listener.Prefixes.Add($"http://127.0.0.1:5000/");
 
 		string schema_string = """
 			{
@@ -111,8 +111,17 @@ class AssetHttp
 
 		listener.Start();
 
-		while(true) {
+		while (true)
+		{
 			HttpListenerContext context = listener.GetContext();
+
+			if (context.Request.Url.LocalPath.StartsWith("/test.txt"))
+			{
+				byte[] buffer = System.Text.Encoding.UTF8.GetBytes("foo");
+				context.Response.ContentLength64 = buffer.Length;
+				context.Response.OutputStream.Write(buffer);
+				context.Response.OutputStream.Close();
+			}
 
 			UriToAsset(context);
 		}
