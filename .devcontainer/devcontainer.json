@@ -1,9 +1,11 @@
 {
 	"name": "Satisfactory.Dev CUE4PArse HTTP Wrapper",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	"dockerComposeFile": "./docker-compose.yml",
+	"service": "devcontainer",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"postCreateCommand": "sudo chown -R vscode:vscode ./CUE4Parse/ && sudo chown -R vscode:vscode ./UnrealEngine/ && sudo chown -R vscode:vscode ./data/Satisfactory/",
 	"updateRemoteUserUID": true,
+	"remoteUser": "vscode",
 	"customizations": {
 		"vscode": {
 			"extensions": [

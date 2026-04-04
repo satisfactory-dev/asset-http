@@ -1,0 +1,16 @@
+services:
+    devcontainer:
+        build:
+            dockerfile: DockerFile
+        restart: always
+        command: sleep infinity
+        volumes:
+            - ../../:/workspaces:cached
+            - Satisfactory:/workspaces/asset-http/data/Satisfactory/
+            - CUE4Parse:/workspaces/asset-http/CUE4Parse/
+            - UnrealEngine:/workspaces/asset-http/UnrealEngine/
+
+volumes:
+    Satisfactory:
+    CUE4Parse:
+    UnrealEngine:
