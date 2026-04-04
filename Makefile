@@ -6,7 +6,7 @@ setup:
 
 .PHONY: UnrealEngine
 UnrealEngine:
-	cd UnrealEngine && ./setup.sh && ./GenerateProjectFiles.sh && make UnrealPak
+	cd UnrealEngine && ./Setup.sh && ./GenerateProjectFiles.sh && make UnrealPak
 
 UnrealEngine--copy-Oodle:
 	cp ./UnrealEngine/Engine/Source/Programs/Shared/EpicGames.Oodle/Sdk/2.9.10/linux/lib/liboo2corelinux64.so.9 ./src/oo2core_9_win64.dll
