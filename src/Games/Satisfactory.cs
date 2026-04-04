@@ -15,12 +15,18 @@ class Satisfactory
 	public readonly string game_version;
 	public readonly EGame ue_version;
 
+	public readonly bool look_for_usmap;
+
 	private DefaultFileProvider? _provider = null;
 
-	public Satisfactory(string game, EGame unreal_engine)
-	{
+	public Satisfactory(
+		string game,
+		EGame unreal_engine,
+		bool look_for_usmap
+	) {
 		game_version = game;
 		ue_version = unreal_engine;
+		this.look_for_usmap = look_for_usmap;
 	}
 
 	public bool Exists
@@ -55,9 +61,11 @@ class Satisfactory
 					true,
 					new VersionContainer(ue_version)
 				);
+				if (look_for_usmap) {
 				_provider.MappingsContainer = new FileUsmapTypeMappingsProvider(
 					$"{this.directory}/CommunityResources/FactoryGame.usmap"
 				);
+				}
 				_provider.Initialize();
 				_provider.SubmitKey(new FGuid(), new FAesKey(($"0x{new string('0', 64)}")));
 				/*

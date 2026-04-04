@@ -61,6 +61,9 @@ class AssetHttp
 						"version": {
 							"$ref": "#/$defs/semver"
 						},
+						"usmap": {
+							"type": "boolean"
+						},
 						"unreal_engine": {
 							"$ref": "#/$defs/unreal_engine"
 						}
@@ -143,7 +146,8 @@ class AssetHttp
 
 			versions.Add(new Games.Satisfactory(
 				entry["version"].ToString(),
-				unreal_engine
+				unreal_engine,
+				null == entry["usmap"] ? false : (bool) entry["usmap"]
 			));
 		}
 
