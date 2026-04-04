@@ -60,7 +60,9 @@ class Satisfactory
 				);
 				_provider.Initialize();
 				_provider.SubmitKey(new FGuid(), new FAesKey(($"0x{new string('0', 64)}")));
+				/*
 				_provider.LoadLocalization(ELanguage.English);
+				*/
 			}
 
 			return _provider;
