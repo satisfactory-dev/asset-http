@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using Json.Schema;
 using SkiaSharp;
 using CUE4Parse.UE4.Versions;
+using CUE4Parse_Conversion.Textures;
 
 namespace SatisfactorDotDev.AssetHttp;
 
@@ -148,9 +149,9 @@ class AssetHttp
 
 		object files = Satisfactory[parts[2]].Files;
 
-		SKBitmap texture = Satisfactory[parts[2]].LoadTexture($"/{parts[3]}");
+		CTexture texture = Satisfactory[parts[2]].LoadTexture($"/{parts[3]}");
 
-		SKData png = texture.Encode(SKEncodedImageFormat.Png, 100);
+		SKData png = texture.ToSkBitmap().Encode(SKEncodedImageFormat.Png, 100);
 
 		context.Response.ContentLength64 = png.Size;
 		png.AsStream().CopyTo(context.Response.OutputStream);

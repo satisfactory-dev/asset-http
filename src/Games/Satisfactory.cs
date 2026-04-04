@@ -47,7 +47,7 @@ class Satisfactory
 		get
 		{
 			if (null == _provider) {
-				string oodle_dll_path = Path.Combine("./", OodleHelper.OODLE_DLL_NAME);
+				string oodle_dll_path = Path.Combine("./", OodleHelper.OODLE_NAME_OLD);
 				OodleHelper.Initialize(Path.GetFullPath(oodle_dll_path));
 				_provider = new DefaultFileProvider(
 					$"{this.directory}/FactoryGame/Content/Paks",
@@ -69,10 +69,10 @@ class Satisfactory
 
 	private object LoadObject(string path)
 	{
-		return this.provider.LoadObject(path);
+		return this.provider.LoadPackageObject(path);
 	}
 
-	public SKBitmap? LoadTexture(string path)
+	public CTexture? LoadTexture(string path)
 	{
 		object obj = this.LoadObject(path);
 
