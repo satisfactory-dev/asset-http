@@ -36,8 +36,12 @@ class AssetHttp
 					"unreal_engine": {
 						"type": "string",
 						"enum": [
+							"4.20",
+							"4.26",
 							"5.2",
-							"5.3"
+							"5.3",
+							"5.6",
+							"5.7"
 						]
 					},
 					"semver": {
