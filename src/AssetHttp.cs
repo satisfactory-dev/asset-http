@@ -88,11 +88,50 @@ class AssetHttp
 			EGame unreal_engine;
 
 			switch (entry["unreal_engine"].ToString()) {
+				case "4.20":
+					unreal_engine = EGame.GAME_UE4_20;
+					break;
+				case "4.21":
+					unreal_engine = EGame.GAME_UE4_21;
+					break;
+				case "4.22":
+					unreal_engine = EGame.GAME_UE4_22;
+					break;
+				case "4.23":
+					unreal_engine = EGame.GAME_UE4_23;
+					break;
+				case "4.24":
+					unreal_engine = EGame.GAME_UE4_24;
+					break;
+				case "4.25":
+					unreal_engine = EGame.GAME_UE4_25;
+					break;
+				case "4.26":
+					unreal_engine = EGame.GAME_UE4_26;
+					break;
+				case "5.0":
+					unreal_engine = EGame.GAME_UE5_0;
+					break;
+				case "5.1":
+					unreal_engine = EGame.GAME_UE5_1;
+					break;
 				case "5.2":
 					unreal_engine = EGame.GAME_UE5_2;
 					break;
 				case "5.3":
 					unreal_engine = EGame.GAME_UE5_3;
+					break;
+				case "5.4":
+					unreal_engine = EGame.GAME_UE5_4;
+					break;
+				case "5.5":
+					unreal_engine = EGame.GAME_UE5_5;
+					break;
+				case "5.6":
+					unreal_engine = EGame.GAME_UE5_6;
+					break;
+				case "5.7":
+					unreal_engine = EGame.GAME_UE5_7;
 					break;
 				default:
 					throw new Exception("Unsupported Unreal Engine version");

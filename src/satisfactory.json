@@ -1,5 +1,25 @@
 [
 	{
+		"version": "0.3.7.7",
+		"unreal_engine": "4.20"
+	},
+	{
+		"version": "0.4.2.11",
+		"unreal_engine": "4.26"
+	},
+	{
+		"version": "0.5.2.1",
+		"unreal_engine": "4.26"
+	},
+	{
+		"version": "0.6.1.5",
+		"unreal_engine": "4.26"
+	},
+	{
+		"version": "0.7.1.1",
+		"unreal_engine": "4.26"
+	},
+	{
 		"version": "0.8.3.3",
 		"unreal_engine": "5.2"
 	},
@@ -24,7 +44,23 @@
 		"unreal_engine": "5.3"
 	},
 	{
-		"version": "1.1.1.1",
+		"version": "1.0.1.4",
 		"unreal_engine": "5.3"
+	},
+	{
+		"version": "1.1.1.1",
+		"unreal_engine": "5.6"
+	},
+	{
+		"version": "1.1.2.2",
+		"unreal_engine": "5.6"
+	},
+	{
+		"version": "1.2.0.0",
+		"unreal_engine": "5.7"
+	},
+	{
+		"version": "1.2.1.0",
+		"unreal_engine": "5.7"
 	}
 ]
