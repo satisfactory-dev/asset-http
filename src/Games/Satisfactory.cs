@@ -62,9 +62,9 @@ class Satisfactory
 					new VersionContainer(ue_version)
 				);
 				if (look_for_usmap) {
-				_provider.MappingsContainer = new FileUsmapTypeMappingsProvider(
-					$"{this.directory}/CommunityResources/FactoryGame.usmap"
-				);
+					_provider.MappingsContainer = new FileUsmapTypeMappingsProvider(
+						$"{this.directory}/CommunityResources/FactoryGame.usmap"
+					);
 				}
 				_provider.Initialize();
 				_provider.SubmitKey(new FGuid(), new FAesKey(($"0x{new string('0', 64)}")));
