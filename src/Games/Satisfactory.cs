@@ -6,8 +6,8 @@ using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Versions;
+
 using CUE4Parse_Conversion.Textures;
-using SkiaSharp;
 
 namespace SatisfactorDotDev.AssetHttp.Games;
 
@@ -16,82 +16,76 @@ class Satisfactory(
     EGame unreal_engine,
     bool look_for_usmap
 ) {
-	public readonly string game_version = game;
-	public readonly EGame ue_version = unreal_engine;
+	public readonly string Game_Version = game;
+	public readonly EGame UE_Version = unreal_engine;
 
-	public readonly bool look_for_usmap = look_for_usmap;
+	public readonly bool Look_for_usmap = look_for_usmap;
 
-	private DefaultFileProvider? _provider = null;
-
-    public bool Exists
+	public bool Exists
 	{
 		get
 		{
 			return (
-				File.Exists($"{this.directory}/FactoryGame.exe")
-				|| File.Exists($"{this.directory}/FactoryGameSteam.exe")
+				File.Exists($"{this.Directory}/FactoryGame.exe")
+				|| File.Exists($"{this.Directory}/FactoryGameSteam.exe")
 			);
 		}
 	}
 
-	private string directory
+	private string Directory
 	{
 		get
 		{
-			return $"../data/Satisfactory/{game_version}";
+			return $"../data/Satisfactory/{Game_Version}";
 		}
 	}
 
-	private DefaultFileProvider provider
+	private DefaultFileProvider Provider
 	{
 		get
 		{
-			if (null == _provider) {
+			if (null == field) {
 				string oodle_dll_path = Path.Combine("./", OodleHelper.OODLE_NAME_OLD);
 				OodleHelper.Initialize(Path.GetFullPath(oodle_dll_path));
-				_provider = new DefaultFileProvider(
-					$"{this.directory}/FactoryGame/Content/Paks",
+				field = new DefaultFileProvider(
+					$"{this.Directory}/FactoryGame/Content/Paks",
 					SearchOption.AllDirectories,
-					new VersionContainer(ue_version),
+					new VersionContainer(UE_Version),
 					StringComparer.OrdinalIgnoreCase
 				);
-				if (look_for_usmap) {
-					_provider.MappingsContainer = new FileUsmapTypeMappingsProvider(
-						$"{this.directory}/CommunityResources/FactoryGame.usmap"
+				if (Look_for_usmap) {
+					field.MappingsContainer = new FileUsmapTypeMappingsProvider(
+						$"{this.Directory}/CommunityResources/FactoryGame.usmap"
 					);
 				}
-				_provider.Initialize();
-				_provider.SubmitKey(new FGuid(), new FAesKey(($"0x{new string('0', 64)}")));
+				field.Initialize();
+				field.SubmitKey(new FGuid(), new FAesKey(($"0x{new string('0', 64)}")));
 				/*
-				_provider.LoadLocalization(ELanguage.English);
+				field.LoadLocalization(ELanguage.English);
 				*/
 			}
 
-			return _provider;
+			return field;
 		}
-	}
+	} = null;
 
 	private object LoadObject(string path)
 	{
-		return this.provider.LoadPackageObject(path);
+		return this.Provider.LoadPackageObject(path);
 	}
 
 	public CTexture? LoadTexture(string path)
 	{
 		object obj = this.LoadObject(path);
 
-		if (obj is not UTexture2D) {
-			return null;
-		}
-
-		return TextureDecoder.Decode((UTexture2D) obj);
+		return obj is not UTexture2D ? null : TextureDecoder.Decode((UTexture2D) obj);
 	}
 
 	public FileProviderDictionary Files
 	{
 		get
 		{
-			return this.provider.Files;
+			return this.Provider.Files;
 		}
 	}
 }

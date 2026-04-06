@@ -23,3 +23,6 @@ publish: setup deps publish--skip-setup
 
 publish--skip-setup:
 	dotnet publish ./src/AssetHttp.csproj
+
+lint:
+	@dotnet format style -v detailed --severity info --verify-no-changes src

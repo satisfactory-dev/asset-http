@@ -1,17 +1,17 @@
-﻿using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.Json.Nodes;
-using Json.Schema;
-using SkiaSharp;
-using CUE4Parse.UE4.Versions;
-using CUE4Parse_Conversion.Textures;
-using CUE4Parse.FileProvider.Vfs;
-using Org.BouncyCastle.Crypto.Digests;
+﻿using System.Net;
 using System.Security.Cryptography;
-using Json.More;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+
+using CUE4Parse.UE4.Versions;
+
+using CUE4Parse_Conversion.Textures;
+
+using Json.More;
+using Json.Schema;
+
+using SkiaSharp;
 
 namespace SatisfactorDotDev.AssetHttp;
 
@@ -20,11 +20,11 @@ class AssetHttpJsonItem(
 	string unreal_engine,
 	bool usmap
 ) {
-	public string version = version;
+	public string Version = version;
 
-	public string unreal_engine = unreal_engine;
+	public string Unreal_engine = unreal_engine;
 
-	public bool usmap = usmap;
+	public bool Usmap = usmap;
 
 	public static implicit operator AssetHttpJsonItem(JsonNode? maybe)
 	{
@@ -35,26 +35,28 @@ class AssetHttpJsonItem(
 
 		JsonObject obj = (JsonObject) maybe;
 
-		JsonNode? Node_usmap = obj["usmap"];
+		JsonNode? node_usmap = obj["usmap"];
 
 		if (
-			!obj.TryGetPropertyValue("unreal_engine", out JsonNode? Node_unreal_engine)
-			|| null == Node_unreal_engine
+			!obj.TryGetPropertyValue("unreal_engine", out JsonNode? node_unreal_engine)
+			|| null == node_unreal_engine
 		) {
 			throw new Exception("Node must contain unreal_engine!");
 		}
 
+		#pragma warning disable IDE0046 // Convert to conditional expression
 		if (
-			!obj.TryGetPropertyValue("version", out JsonNode? Node_version)
-			|| null == Node_version
+			!obj.TryGetPropertyValue("version", out JsonNode? node_version)
+			|| null == node_version
 		) {
 			throw new Exception("Node must contain version!");
 		}
+		#pragma warning restore IDE0046 // Convert to conditional expression
 
 		return new AssetHttpJsonItem(
-			Node_version.GetValue<string>(),
-			Node_unreal_engine.GetValue<string>(),
-			null != Node_usmap && Node_usmap.GetValue<bool>()
+			node_version.GetValue<string>(),
+			node_unreal_engine.GetValue<string>(),
+			null != node_usmap && node_usmap.GetValue<bool>()
 		);
 	}
 
@@ -72,9 +74,9 @@ class AssetHttpJsonItem(
 
 class SanityCheckedContext
 {
-	public readonly HttpListenerContext full_context;
+	public readonly HttpListenerContext Full;
 
-	protected readonly Uri Url;
+	protected readonly Uri url;
 
 	public bool IsSatisfactory { get; private set; }
 
@@ -85,11 +87,11 @@ class SanityCheckedContext
 			throw new Exception("URL not specified on context request!");
 		}
 
-		Url = context.Request.Url;
+		url = context.Request.Url;
 
-		IsSatisfactory = Url.LocalPath.StartsWith("/satisfactory/");
+		IsSatisfactory = url.LocalPath.StartsWith("/satisfactory/");
 
-		full_context = context;
+		Full = context;
 	}
 }
 
@@ -126,20 +128,20 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 
 	public SanityCheckedSatisfactoryContext(
 		HttpListenerContext context,
-		Dictionary<string, Games.Satisfactory> SatisfactoryVersions
+		Dictionary<string, Games.Satisfactory> satisfactory_versions
 	) : base(context) {
 		if (!IsSatisfactory) {
 			throw new UnsatisfactoryException($"Context was not Satisfactory! ({context.Request.Url?.LocalPath})");
 		}
 
-		string[] parts = Url.LocalPath.Split("/", 4);
+		string[] parts = url.LocalPath.Split("/", 4);
 
 		if (parts.Length < 4)
 		{
 			throw new UnsatisfactoryException("Expecting at least 4 parts to URL path!");
 		}
 
-		if (!SatisfactoryVersions.ContainsKey(parts[2]))
+		if (!satisfactory_versions.ContainsKey(parts[2]))
 		{
 			throw new UnsatisfactoryException("Unsupported version specified!");
 		}
@@ -155,7 +157,7 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 			IsMetadataRequest = false;
 		}
 
-		Satisfactory = SatisfactoryVersions[Version];
+		Satisfactory = satisfactory_versions[Version];
 
 		if (!Satisfactory.Exists)
 		{
@@ -171,7 +173,9 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 			asset_fetched = true;
 
 			return Asset;
+		#pragma warning disable IDE0150 // Prefer 'null' check over type check
 		} else if (Asset is CTexture) {
+		#pragma warning restore IDE0150 // Prefer 'null' check over type check
 			return Asset;
 		};
 
@@ -182,24 +186,18 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 	{
 		CTexture? texture = this.Texture();
 
-		if (null == texture)
-		{
-			throw new UnsatisfactoryException("Texture does not exist!");
-		}
-
-		return texture.ToSkBitmap().Encode(SKEncodedImageFormat.Png, 100);
+		return null == texture
+			? throw new UnsatisfactoryException("Texture does not exist!")
+			: texture.ToSkBitmap().Encode(SKEncodedImageFormat.Png, 100);
 	}
 
 	public JsonObject ToMetadata()
 	{
 		CTexture? texture = this.Texture();
 
-		if (null == texture)
-		{
-			throw new UnsatisfactoryException("Texture does not exist!");
-		}
-
-		return new()
+		return null == texture
+			? throw new UnsatisfactoryException("Texture does not exist!")
+			: new()
 		{
 			["Width"] = texture.Width,
 			["Height"] = texture.Height,
@@ -271,7 +269,7 @@ class AssetHttp
 
 		string data_contents;
 
-		using (StreamReader stream = new StreamReader("./satisfactory.json", Encoding.UTF8)) {
+		using (StreamReader stream = new("./satisfactory.json", Encoding.UTF8)) {
 			data_contents = stream.ReadToEnd();
 		}
 
@@ -299,7 +297,7 @@ class AssetHttp
 		Console.WriteLine($"{items.Count} items found in config");
 
 		foreach (AssetHttpJsonItem entry in items) {
-			EGame unreal_engine = entry.unreal_engine switch
+			EGame unreal_engine = entry.Unreal_engine switch
 			{
 				"4.20" => EGame.GAME_UE4_20,
 				"4.21" => EGame.GAME_UE4_21,
@@ -320,16 +318,16 @@ class AssetHttp
 			};
 
 			versions.Add(new Games.Satisfactory(
-				entry.version,
+				entry.Version,
 				unreal_engine,
-				entry.usmap
+				entry.Usmap
 			));
 		}
 
 		foreach (Games.Satisfactory version in versions)
 		{
-			Satisfactory[version.game_version] = version;
-			Console.WriteLine($"Satisfactory {version.game_version} {(version.Exists ? "does" : "does not")} exist");
+			Satisfactory[version.Game_Version] = version;
+			Console.WriteLine($"Satisfactory {version.Game_Version} {(version.Exists ? "does" : "does not")} exist");
 		}
 
 		listener.Start();
@@ -379,9 +377,9 @@ class AssetHttp
 	{
 		SKData png = context.ToPng();
 
-		context.full_context.Response.ContentLength64 = png.Size;
-		png.AsStream().CopyTo(context.full_context.Response.OutputStream);
-		context.full_context.Response.OutputStream.Close();
+		context.Full.Response.ContentLength64 = png.Size;
+		png.AsStream().CopyTo(context.Full.Response.OutputStream);
+		context.Full.Response.OutputStream.Close();
 	}
 
 	protected static async Task UriToAssetMetaDataAsync(SanityCheckedSatisfactoryContext context)
@@ -389,10 +387,10 @@ class AssetHttp
 		JsonObject metadata = context.ToMetadata();
 
 		await JsonSerializer.SerializeAsync(
-			context.full_context.Response.OutputStream,
+			context.Full.Response.OutputStream,
 			metadata
 		);
 
-		context.full_context.Response.OutputStream.Close();
+		context.Full.Response.OutputStream.Close();
 	}
 }

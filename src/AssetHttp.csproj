@@ -6,6 +6,7 @@
 		<PublishSingleFile>true</PublishSingleFile>
 		<SelfContained>true</SelfContained>
 		<Nullable>enable</Nullable>
+		<RootNamespace>SatisfactorDotDev.AssetHttp</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
