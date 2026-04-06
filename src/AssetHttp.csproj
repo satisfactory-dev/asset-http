@@ -21,9 +21,11 @@
 	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
 		<Copy SourceFiles="./oo2core_9_win64.dll" DestinationFolder="$(OutDir)" />
 		<Copy SourceFiles="./satisfactory.json" DestinationFolder="$(OutDir)" />
+		<Copy SourceFiles="./metadata.schema.json" DestinationFolder="$(OutDir)" />
 	</Target>
 	<Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
 		<Copy SourceFiles="./oo2core_9_win64.dll" DestinationFolder="$(PublishDir)" />
 		<Copy SourceFiles="./satisfactory.json" DestinationFolder="$(PublishDir)" />
+		<Copy SourceFiles="./metadata.schema.json" DestinationFolder="$(PublishDir)" />
 	</Target>
 </Project>
