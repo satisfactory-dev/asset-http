@@ -1,6 +1,7 @@
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
+using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -10,26 +11,19 @@ using SkiaSharp;
 
 namespace SatisfactorDotDev.AssetHttp.Games;
 
-class Satisfactory
-{
-	public readonly string game_version;
-	public readonly EGame ue_version;
+class Satisfactory(
+    string game,
+    EGame unreal_engine,
+    bool look_for_usmap
+) {
+	public readonly string game_version = game;
+	public readonly EGame ue_version = unreal_engine;
 
-	public readonly bool look_for_usmap;
+	public readonly bool look_for_usmap = look_for_usmap;
 
 	private DefaultFileProvider? _provider = null;
 
-	public Satisfactory(
-		string game,
-		EGame unreal_engine,
-		bool look_for_usmap
-	) {
-		game_version = game;
-		ue_version = unreal_engine;
-		this.look_for_usmap = look_for_usmap;
-	}
-
-	public bool Exists
+    public bool Exists
 	{
 		get
 		{
@@ -58,8 +52,8 @@ class Satisfactory
 				_provider = new DefaultFileProvider(
 					$"{this.directory}/FactoryGame/Content/Paks",
 					SearchOption.AllDirectories,
-					true,
-					new VersionContainer(ue_version)
+					new VersionContainer(ue_version),
+					StringComparer.OrdinalIgnoreCase
 				);
 				if (look_for_usmap) {
 					_provider.MappingsContainer = new FileUsmapTypeMappingsProvider(
@@ -86,14 +80,14 @@ class Satisfactory
 	{
 		object obj = this.LoadObject(path);
 
-		if (!(obj is UTexture2D)) {
+		if (obj is not UTexture2D) {
 			return null;
 		}
 
 		return TextureDecoder.Decode((UTexture2D) obj);
 	}
 
-	public object Files
+	public FileProviderDictionary Files
 	{
 		get
 		{

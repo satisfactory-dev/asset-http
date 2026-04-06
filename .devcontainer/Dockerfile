@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
+FROM mcr.microsoft.com/devcontainers/dotnet:10.0
 
 USER root
 
