@@ -156,7 +156,7 @@ class AssetHttp
 
 				try {
 					if (!context.Exists) {
-						Console.WriteLine($"Request for ${context.Path} failed, does not exist!");
+						Console.WriteLine($"Request for {context.Path} failed, does not exist!");
 						full_context.Response.StatusCode = 404;
 						full_context.Response.Close();
 						continue;
@@ -169,7 +169,7 @@ class AssetHttp
 						UriToAsset(context);
 					}
 				} catch (UnsatisfactoryException e) {
-					Console.WriteLine($"Request for ${context.Path} failed, exception occurred!");
+					Console.WriteLine($"Request for {context.Path} failed, exception occurred!");
 					Console.Error.Write(e);
 				}
 			} catch (UnsatisfactoryException e) {
