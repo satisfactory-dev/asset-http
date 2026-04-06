@@ -117,6 +117,13 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 		}
 	}
 
+	public bool Exists {
+		get
+		{
+			return null != this.Texture();
+		}
+	}
+
 	public SanityCheckedSatisfactoryContext(
 		HttpListenerContext context,
 		Dictionary<string, Games.Satisfactory> SatisfactoryVersions
@@ -344,11 +351,23 @@ class AssetHttp
 					Satisfactory
 				);
 
+				try {
+					if (!context.Exists) {
+						Console.WriteLine($"Request for ${context.Path} failed, does not exist!");
+						full_context.Response.StatusCode = 404;
+						full_context.Response.Close();
+						continue;
+					}
+
 				if (context.IsMetadataRequest)
 				{
 					await UriToAssetMetaDataAsync(context);
 				} else {
 					UriToAsset(context);
+				}
+				} catch (UnsatisfactoryException e) {
+					Console.WriteLine($"Request for ${context.Path} failed, exception occurred!");
+					Console.Error.Write(e);
 				}
 			} catch (UnsatisfactoryException e) {
 				Console.Error.Write(e);
