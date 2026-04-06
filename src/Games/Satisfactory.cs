@@ -3,6 +3,7 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Versions;
@@ -69,14 +70,19 @@ class Satisfactory(
 		}
 	} = null;
 
-	private object LoadObject(string path)
+	private UObject? LoadObject(string path)
 	{
-		return Provider.LoadPackageObject(path);
+		if (!Provider.TryLoadPackageObject(path, out UObject? obj))
+		{
+			Console.WriteLine($"Failed to load object at {path}");
+		}
+
+		return obj;
 	}
 
 	public CTexture? LoadTexture(string path)
 	{
-		object obj = LoadObject(path);
+		UObject? obj = LoadObject(path);
 
 		return obj is not UTexture2D ? null : TextureDecoder.Decode((UTexture2D) obj);
 	}
