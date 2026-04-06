@@ -359,12 +359,12 @@ class AssetHttp
 						continue;
 					}
 
-				if (context.IsMetadataRequest)
-				{
-					await UriToAssetMetaDataAsync(context);
-				} else {
-					UriToAsset(context);
-				}
+					if (context.IsMetadataRequest)
+					{
+						await UriToAssetMetaDataAsync(context);
+					} else {
+						UriToAsset(context);
+					}
 				} catch (UnsatisfactoryException e) {
 					Console.WriteLine($"Request for ${context.Path} failed, exception occurred!");
 					Console.Error.Write(e);
