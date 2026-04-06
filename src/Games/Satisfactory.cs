@@ -26,8 +26,8 @@ class Satisfactory(
 		get
 		{
 			return (
-				File.Exists($"{this.Directory}/FactoryGame.exe")
-				|| File.Exists($"{this.Directory}/FactoryGameSteam.exe")
+				File.Exists($"{Directory}/FactoryGame.exe")
+				|| File.Exists($"{Directory}/FactoryGameSteam.exe")
 			);
 		}
 	}
@@ -48,14 +48,14 @@ class Satisfactory(
 				string oodle_dll_path = Path.Combine("./", OodleHelper.OODLE_NAME_OLD);
 				OodleHelper.Initialize(Path.GetFullPath(oodle_dll_path));
 				field = new DefaultFileProvider(
-					$"{this.Directory}/FactoryGame/Content/Paks",
+					$"{Directory}/FactoryGame/Content/Paks",
 					SearchOption.AllDirectories,
 					new VersionContainer(UE_Version),
 					StringComparer.OrdinalIgnoreCase
 				);
 				if (Look_for_usmap) {
 					field.MappingsContainer = new FileUsmapTypeMappingsProvider(
-						$"{this.Directory}/CommunityResources/FactoryGame.usmap"
+						$"{Directory}/CommunityResources/FactoryGame.usmap"
 					);
 				}
 				field.Initialize();
@@ -71,12 +71,12 @@ class Satisfactory(
 
 	private object LoadObject(string path)
 	{
-		return this.Provider.LoadPackageObject(path);
+		return Provider.LoadPackageObject(path);
 	}
 
 	public CTexture? LoadTexture(string path)
 	{
-		object obj = this.LoadObject(path);
+		object obj = LoadObject(path);
 
 		return obj is not UTexture2D ? null : TextureDecoder.Decode((UTexture2D) obj);
 	}
@@ -85,7 +85,7 @@ class Satisfactory(
 	{
 		get
 		{
-			return this.Provider.Files;
+			return Provider.Files;
 		}
 	}
 }
