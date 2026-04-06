@@ -56,22 +56,22 @@
 	},
 	{
 		"version": "1.1.1.1",
-		"unreal_engine": "5.6",
+		"unreal_engine": "5.3",
 		"usmap": true
 	},
 	{
 		"version": "1.1.2.2",
-		"unreal_engine": "5.6",
+		"unreal_engine": "5.3",
 		"usmap": true
 	},
 	{
 		"version": "1.2.0.0",
-		"unreal_engine": "5.7",
+		"unreal_engine": "5.6",
 		"usmap": true
 	},
 	{
 		"version": "1.2.1.0",
-		"unreal_engine": "5.7",
+		"unreal_engine": "5.6",
 		"usmap": true
 	}
 ]
