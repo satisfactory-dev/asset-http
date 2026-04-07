@@ -3,6 +3,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
 
 using Json.More;
@@ -154,6 +157,12 @@ class AssetHttp
 					Satisfactory
 				);
 
+				if ("textures.json" == context.Path) {
+					await UriToTextureList(context);
+
+					continue;
+				}
+
 				try {
 					if (!context.Exists) {
 						Console.WriteLine($"Request for {context.Path} failed, does not exist!");
@@ -196,6 +205,63 @@ class AssetHttp
 			metadata
 		);
 
+		context.Full.Response.ContentType = "application/json";
+		context.Full.Response.OutputStream.Close();
+	}
+
+	protected static async Task UriToTextureList(SanityCheckedSatisfactoryContext context)
+	{
+		JsonArray output = [];
+
+		foreach (GameFile file in context.Files.Values)
+		{
+			if (file.Path.EndsWith(".uasset"))
+			{
+				IPackage? package = context.LoadPackage(file.Path);
+
+				if (null != package)
+				{
+					foreach (object item in package.GetExports())
+					{
+						if (item is UTexture2D)
+						{
+							string path = file.PathWithoutExtension;
+
+							if (path.StartsWith("FactoryGame/Content/FactoryGame/"))
+							{
+								string double_last = $"{path}.{path.Split("/").Last()}";
+
+								if (context.TextureExists(double_last))
+								{
+									path = double_last;
+								}
+
+								string with_prefix = $"Game/{path[20..]}";
+
+								if (context.TextureExists(with_prefix))
+								{
+									path = with_prefix;
+								}
+							}
+
+							path = $"/{path}";
+
+							if (!output.Contains(path))
+							{
+								output.Add(path);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		await JsonSerializer.SerializeAsync(
+			context.Full.Response.OutputStream,
+			output
+		);
+
+		context.Full.Response.ContentType = "application/json";
 		context.Full.Response.OutputStream.Close();
 	}
 }

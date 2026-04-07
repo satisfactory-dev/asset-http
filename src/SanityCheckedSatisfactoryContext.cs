@@ -2,6 +2,9 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 
+using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.UE4.Assets;
+
 using CUE4Parse_Conversion.Textures;
 
 using SkiaSharp;
@@ -34,6 +37,14 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 		get
 		{
 			return null != Texture();
+		}
+	}
+
+	public FileProviderDictionary Files
+	{
+		get
+		{
+			return Satisfactory.Files;
 		}
 	}
 
@@ -115,5 +126,15 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 			["SHA512"] = Convert.ToHexStringLower(SHA512.ComputeHash(texture.Data)),
 			["Size"] = texture.Data.Length,
 		};
+	}
+
+	public IPackage? LoadPackage(string path)
+	{
+		return Satisfactory.LoadPackage(path);
+	}
+
+	public bool TextureExists(string path)
+	{
+		return Satisfactory.TexureExists(path);
 	}
 }

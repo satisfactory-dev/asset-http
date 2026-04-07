@@ -3,6 +3,7 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -85,6 +86,18 @@ class Satisfactory(
 		UObject? obj = LoadObject(path);
 
 		return obj is not UTexture2D ? null : TextureDecoder.Decode((UTexture2D) obj);
+	}
+
+	public IPackage? LoadPackage(string path)
+	{
+		Provider.TryLoadPackage(path, out IPackage? package);
+
+		return package;
+	}
+
+	public bool TexureExists(string path)
+	{
+		return Provider.TryLoadPackageObject(path, out UObject? obj) && obj is UTexture2D;
 	}
 
 	public FileProviderDictionary Files
