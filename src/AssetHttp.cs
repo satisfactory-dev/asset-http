@@ -151,6 +151,11 @@ class AssetHttp
 				continue;
 			}
 
+			JsonNode? json_response = null;
+			SKData? png_response = null;
+
+			int status_code = 200;
+
 			try {
 				SanityCheckedSatisfactoryContext context = new(
 					full_context,
@@ -158,58 +163,60 @@ class AssetHttp
 				);
 
 				if ("textures.json" == context.Path) {
-					await UriToTextureList(context);
-
-					continue;
+					json_response = UriToTextureList(context);
 				}
 
+				if (null == json_response && null == png_response) {
 				try {
 					if (!context.Exists) {
 						Console.WriteLine($"Request for {context.Path} failed, does not exist!");
-						full_context.Response.StatusCode = 404;
-						full_context.Response.Close();
-						continue;
-					}
-
+							status_code = 404;
+					} else {
 					if (context.IsMetadataRequest)
 					{
-						await UriToAssetMetaDataAsync(context);
+							json_response = UriToAssetMetaDataAsync(context);
 					} else {
-						UriToAsset(context);
+							png_response = context.ToPng();
+					}
 					}
 				} catch (UnsatisfactoryException e) {
+						status_code = 500;
 					Console.WriteLine($"Request for {context.Path} failed, exception occurred!");
 					Console.Error.Write(e);
 				}
+				}
 			} catch (UnsatisfactoryException e) {
+				status_code = 400;
 				Console.Error.Write(e);
 			}
+
+
+			if (null != json_response)
+			{
+				await JsonSerializer.SerializeAsync(
+					full_context.Response.OutputStream,
+					json_response
+				);
+
+				full_context.Response.ContentType = "application/json";
+			} else if (null != png_response) {
+				full_context.Response.ContentLength64 = png_response.Size;
+				png_response.AsStream().CopyTo(full_context.Response.OutputStream);
+			} else {
+				status_code = 404;
+			}
+
+			full_context.Response.StatusCode = status_code;
+			full_context.Response.Close();
 		}
 	}
 
-	protected static void UriToAsset(SanityCheckedSatisfactoryContext context)
+	protected static JsonObject UriToAssetMetaDataAsync(SanityCheckedSatisfactoryContext context)
 	{
-		SKData png = context.ToPng();
-
-		context.Full.Response.ContentLength64 = png.Size;
-		png.AsStream().CopyTo(context.Full.Response.OutputStream);
-		context.Full.Response.OutputStream.Close();
+		return context.ToMetadata();
 	}
 
-	protected static async Task UriToAssetMetaDataAsync(SanityCheckedSatisfactoryContext context)
-	{
-		JsonObject metadata = context.ToMetadata();
-
-		await JsonSerializer.SerializeAsync(
-			context.Full.Response.OutputStream,
-			metadata
-		);
-
-		context.Full.Response.ContentType = "application/json";
-		context.Full.Response.OutputStream.Close();
-	}
-
-	protected static async Task UriToTextureList(SanityCheckedSatisfactoryContext context)
+	protected static JsonArray UriToTextureList(SanityCheckedSatisfactoryContext context)
 	{
 		JsonArray output = [];
 
@@ -256,12 +263,6 @@ class AssetHttp
 			}
 		}
 
-		await JsonSerializer.SerializeAsync(
-			context.Full.Response.OutputStream,
-			output
-		);
-
-		context.Full.Response.ContentType = "application/json";
-		context.Full.Response.OutputStream.Close();
+		return output;
 	}
 }
