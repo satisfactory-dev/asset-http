@@ -77,7 +77,8 @@ class AssetHttp
 
 		string data_contents;
 
-		using (StreamReader stream = new("./satisfactory.json", Encoding.UTF8)) {
+		using (StreamReader stream = new("./satisfactory.json", Encoding.UTF8))
+		{
 			data_contents = stream.ReadToEnd();
 		}
 
@@ -90,11 +91,14 @@ class AssetHttp
 		if (node is not JsonArray)
 		{
 			throw new Exception("Expecting an array!");
-		} else {
+		}
+		else
+		{
 			Console.WriteLine($"{node.AsArray().Count} items in config");
 		}
 
-		if ( ! data_items.IsValid) {
+		if (!data_items.IsValid)
+		{
 			throw new Exception("data not valid!");
 		}
 
@@ -104,7 +108,8 @@ class AssetHttp
 
 		Console.WriteLine($"{items.Count} items found in config");
 
-		foreach (AssetHttpJsonItem entry in items) {
+		foreach (AssetHttpJsonItem entry in items)
+		{
 			EGame unreal_engine = entry.Unreal_engine switch
 			{
 				"4.20" => EGame.GAME_UE4_20,
@@ -156,36 +161,49 @@ class AssetHttp
 
 			int status_code = 200;
 
-			try {
+			try
+			{
 				SanityCheckedSatisfactoryContext context = new(
 					full_context,
 					Satisfactory
 				);
 
-				if ("textures.json" == context.Path) {
+				if ("textures.json" == context.Path)
+				{
 					json_response = UriToTextureList(context);
 				}
 
-				if (null == json_response && null == png_response) {
-					try {
-						if (!context.Exists) {
+				if (null == json_response && null == png_response)
+				{
+					try
+					{
+						if (!context.Exists)
+						{
 							Console.WriteLine($"Request for {context.Path} failed, does not exist!");
 							status_code = 404;
-						} else {
+						}
+						else
+						{
 							if (context.IsMetadataRequest)
 							{
 								json_response = UriToAssetMetaDataAsync(context);
-							} else {
+							}
+							else
+							{
 								png_response = context.ToPng();
 							}
 						}
-					} catch (UnsatisfactoryException e) {
+					}
+					catch (UnsatisfactoryException e)
+					{
 						status_code = 500;
 						Console.WriteLine($"Request for {context.Path} failed, exception occurred!");
 						Console.Error.Write(e);
 					}
 				}
-			} catch (UnsatisfactoryException e) {
+			}
+			catch (UnsatisfactoryException e)
+			{
 				status_code = 400;
 				Console.Error.Write(e);
 			}
@@ -199,10 +217,14 @@ class AssetHttp
 				);
 
 				full_context.Response.ContentType = "application/json";
-			} else if (null != png_response) {
+			}
+			else if (null != png_response)
+			{
 				full_context.Response.ContentLength64 = png_response.Size;
 				png_response.AsStream().CopyTo(full_context.Response.OutputStream);
-			} else {
+			}
+			else
+			{
 				status_code = 404;
 			}
 
