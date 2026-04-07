@@ -36,7 +36,7 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 	public bool Exists {
 		get
 		{
-			return null != Texture();
+			return TextureExists(Path);
 		}
 	}
 
