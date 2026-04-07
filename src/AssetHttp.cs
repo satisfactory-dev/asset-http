@@ -222,6 +222,7 @@ class AssetHttp
 			{
 				full_context.Response.ContentLength64 = png_response.Size;
 				png_response.AsStream().CopyTo(full_context.Response.OutputStream);
+				png_response.Dispose();
 			}
 			else
 			{
