@@ -167,23 +167,23 @@ class AssetHttp
 				}
 
 				if (null == json_response && null == png_response) {
-				try {
-					if (!context.Exists) {
-						Console.WriteLine($"Request for {context.Path} failed, does not exist!");
+					try {
+						if (!context.Exists) {
+							Console.WriteLine($"Request for {context.Path} failed, does not exist!");
 							status_code = 404;
-					} else {
-					if (context.IsMetadataRequest)
-					{
-							json_response = UriToAssetMetaDataAsync(context);
-					} else {
-							png_response = context.ToPng();
-					}
-					}
-				} catch (UnsatisfactoryException e) {
+						} else {
+							if (context.IsMetadataRequest)
+							{
+								json_response = UriToAssetMetaDataAsync(context);
+							} else {
+								png_response = context.ToPng();
+							}
+						}
+					} catch (UnsatisfactoryException e) {
 						status_code = 500;
-					Console.WriteLine($"Request for {context.Path} failed, exception occurred!");
-					Console.Error.Write(e);
-				}
+						Console.WriteLine($"Request for {context.Path} failed, exception occurred!");
+						Console.Error.Write(e);
+					}
 				}
 			} catch (UnsatisfactoryException e) {
 				status_code = 400;
