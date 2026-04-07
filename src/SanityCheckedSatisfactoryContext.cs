@@ -33,7 +33,7 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 	public bool Exists {
 		get
 		{
-			return null != this.Texture();
+			return null != Texture();
 		}
 	}
 
@@ -95,7 +95,7 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 
 	public SKData ToPng()
 	{
-		CTexture? texture = this.Texture();
+		CTexture? texture = Texture();
 
 		return null == texture
 			? throw new UnsatisfactoryException("Texture does not exist!")
@@ -104,7 +104,7 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 
 	public JsonObject ToMetadata()
 	{
-		CTexture? texture = this.Texture();
+		CTexture? texture = Texture();
 
 		return null == texture
 			? throw new UnsatisfactoryException("Texture does not exist!")
