@@ -11,8 +11,11 @@ UnrealEngine:
 UnrealEngine--copy-Oodle:
 	@cp ./UnrealEngine/Engine/Source/Programs/Shared/EpicGames.Oodle/Sdk/2.9.10/linux/lib/liboo2corelinux64.so.9 ./src/oo2core_9_win64.dll
 
-build: setup deps
+build: setup deps build--skip-setup
+
+build--skip-setup:
 	@dotnet build ./src/AssetHttp.csproj
+	@rsync -avu ./src/bin/Debug/net10.0/linux-x64/ ./bin/
 
 deps: deps--cue4parse
 
