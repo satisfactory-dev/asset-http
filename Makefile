@@ -23,6 +23,7 @@ publish: setup deps publish--skip-setup
 
 publish--skip-setup:
 	@dotnet publish ./src/AssetHttp.csproj
+	@rsync -avu ./src/bin/Release/net10.0/linux-x64/publish/ ./bin/
 
 lint:
 	@dotnet format style -v detailed --severity info --verify-no-changes src
