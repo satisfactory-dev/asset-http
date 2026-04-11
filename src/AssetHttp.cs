@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Versions;
 
 using Json.More;
@@ -145,6 +146,13 @@ class AssetHttp
 
 		listener.Start();
 
+		JsonSerializerOptions json_options = new ()
+		{
+			IndentCharacter = '\t',
+			IndentSize = 1,
+			WriteIndented = true,
+		};
+
 		while (true)
 		{
 			HttpListenerContext full_context = listener.GetContext();
@@ -172,6 +180,10 @@ class AssetHttp
 				{
 					json_response = UriToTextureList(context);
 				}
+				else if ("blueprints.json" == context.Path)
+				{
+					json_response = UriToBlueprintList(context);
+				}
 
 				if (null == json_response && null == png_response)
 				{
@@ -187,6 +199,10 @@ class AssetHttp
 							if (context.IsMetadataRequest)
 							{
 								json_response = UriToAssetMetaDataAsync(context);
+							}
+							else if (context.BlueprintExists(context.Path))
+							{
+								json_response = context.ToBlueprintJson();
 							}
 							else
 							{
@@ -213,7 +229,8 @@ class AssetHttp
 			{
 				await JsonSerializer.SerializeAsync(
 					full_context.Response.OutputStream,
-					json_response
+					json_response,
+					json_options
 				);
 
 				full_context.Response.ContentType = "application/json";
@@ -237,6 +254,56 @@ class AssetHttp
 	protected static JsonObject UriToAssetMetaDataAsync(SanityCheckedSatisfactoryContext context)
 	{
 		return context.ToMetadata();
+	}
+
+	protected static JsonArray UriToBlueprintList(SanityCheckedSatisfactoryContext context)
+	{
+		JsonArray output = [];
+
+		foreach (GameFile file in context.Files.Values)
+		{
+			if (file.Path.EndsWith(".uasset"))
+			{
+				IPackage? package = context.LoadPackage(file.Path);
+
+				if (null != package)
+				{
+					foreach (object item in package.GetExports())
+					{
+						if (item is UBlueprintGeneratedClass)
+						{
+							string path = file.PathWithoutExtension;
+
+							if (path.StartsWith("FactoryGame/Content/FactoryGame/"))
+							{
+								string double_last = $"{path}.{path.Split("/").Last()}";
+
+								if (context.BlueprintExists(double_last))
+								{
+									path = double_last;
+								}
+
+								string with_prefix = $"Game/{path[20..]}";
+
+								if (context.BlueprintExists(with_prefix))
+								{
+									path = with_prefix;
+								}
+							}
+
+							path = $"/{path}";
+
+							if (!output.Contains(path))
+							{
+								output.Add(path);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return output;
 	}
 
 	protected static JsonArray UriToTextureList(SanityCheckedSatisfactoryContext context)

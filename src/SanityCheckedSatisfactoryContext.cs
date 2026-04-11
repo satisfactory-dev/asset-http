@@ -1,11 +1,18 @@
 using System.Net;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Objects.Engine;
 
 using CUE4Parse_Conversion.Textures;
+
+using Json.More;
+
+using Newtonsoft.Json;
 
 using SkiaSharp;
 
@@ -36,7 +43,10 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 	public bool Exists {
 		get
 		{
-			return TextureExists(Path);
+			return (
+				TextureExists(Path)
+				|| BlueprintExists(Path)
+			);
 		}
 	}
 
@@ -104,6 +114,33 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 		return null;
 	}
 
+	public JsonArray ToBlueprintJson()
+	{
+		IPackage? package = Satisfactory.LoadPackage($"/{Path}");
+
+		if (null == package)
+		{
+			throw new UnsatisfactoryException("Requested package does not exist!");
+		}
+
+		JsonArray output = [];
+
+		bool blueprint_checked = false;
+
+		foreach (UObject export in package.GetExports())
+		{
+			blueprint_checked = !blueprint_checked && export is not UBlueprintGeneratedClass
+				? throw new UnsatisfactoryException("Requested export not a blueprint!")
+				: true;
+
+			string json = JsonConvert.SerializeObject(export);
+
+			output.Add(JsonElement.Parse(json));
+		}
+
+		return output;
+	}
+
 	public SKData ToPng()
 	{
 		CTexture? texture = Texture();
@@ -131,6 +168,11 @@ class SanityCheckedSatisfactoryContext : SanityCheckedContext
 	public IPackage? LoadPackage(string path)
 	{
 		return Satisfactory.LoadPackage(path);
+	}
+
+	public bool BlueprintExists(string path)
+	{
+		return Satisfactory.BlueprintExists(path);
 	}
 
 	public bool TextureExists(string path)

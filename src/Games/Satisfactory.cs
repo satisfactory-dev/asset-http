@@ -1,12 +1,14 @@
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Versions;
 
 using CUE4Parse_Conversion.Textures;
@@ -93,6 +95,13 @@ class Satisfactory(
 		Provider.TryLoadPackage(path, out IPackage? package);
 
 		return package;
+	}
+
+	public bool BlueprintExists(string path)
+	{
+		Provider.TryLoadPackage(path, out IPackage? obj);
+
+		return obj != null && obj.GetExport(0) is UBlueprintGeneratedClass;
 	}
 
 	public bool TexureExists(string path)
